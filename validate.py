@@ -124,15 +124,15 @@ def validate_readme(readme_path):
     
     # Check for key sections
     required_sections = [
-        '# Fopma-Ai',
+        '# 🤖 Fopma-AI',  # Updated to match new title
         'Mini-ChatGPT',
         'Features',
         'Quick Start', 
         'Model Architecture',
         'Training Configuration',
-        'Customization Options',
-        'Example Usage',
-        'Limitations',
+        'Interactive Usage Guide',  # Updated section name
+        'Deployment & Production',  # Updated section name
+        'Educational Deep Dive',    # New comprehensive section
         'License'
     ]
     
