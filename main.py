@@ -329,9 +329,11 @@ def enhanced_training_loop(model, tokenizer, config, device):
         print("⚠️ OpenWebText not available, using fallback dataset...")
         dataset = load_dataset("wikitext", "wikitext-2-raw-v1", split="train")
     
-    # Sample data for training (adjust size based on available resources)
-    sample_size = 10000  # Increased sample size
-    print(f"🎯 Sampling {sample_size} texts for training...")
+    # Enhanced data sampling - use much more data for better training
+    data_config = get_data_config()
+    sample_size = data_config['sample_size']  # Now 50,000 for enhanced training!
+    print(f"🎯 ENHANCED DATA LOADING: Sampling {sample_size:,} texts for better training...")
+    print(f"   📈 This is 5x more data than before for significantly better results!")
     
     if hasattr(dataset, 'take'):
         # For streaming datasets
@@ -351,17 +353,22 @@ def enhanced_training_loop(model, tokenizer, config, device):
         num_workers=0  # Avoid multiprocessing issues in Colab
     )
     
-    # Enhanced optimizer and scheduler
-    print("🔧 Setting up enhanced training configuration...")
+    # Enhanced optimizer and scheduler  
+    print("🔧 Setting up ENHANCED training configuration...")
+    print("🎯 Using 100 epochs and 5x more data for better results!")
+    
+    # Use enhanced configuration
+    from fopma_ai.utils.config import get_training_config, get_data_config
+    training_config = get_training_config()
     
     optimizer = AdamW(
         model.parameters(),
-        lr=3e-4,  # Slightly lower learning rate for stability
-        weight_decay=0.01,
-        betas=(0.9, 0.95)  # Better betas for transformer training
+        lr=training_config['learning_rate'],
+        weight_decay=training_config['weight_decay'],
+        betas=training_config['betas']
     )
     
-    num_epochs = 3  # More epochs for better training
+    num_epochs = training_config['num_epochs']  # Now 100 epochs for enhanced training!
     total_steps = len(train_dataloader) * num_epochs
     warmup_steps = int(0.1 * total_steps)  # 10% warmup
     

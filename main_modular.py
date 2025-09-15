@@ -80,7 +80,9 @@ def enhanced_training_loop(model, tokenizer, config, device):
     
     # Load high-quality training data
     print("🎯 Loading enhanced training datasets...")
-    texts = data_manager.get_high_quality_datasets(sample_size=10000)
+    from fopma_ai.utils.config import get_data_config
+    data_config = get_data_config()
+    texts = data_manager.get_high_quality_datasets(sample_size=data_config['sample_size'])
     
     if not texts:
         print("❌ Failed to load training data")
