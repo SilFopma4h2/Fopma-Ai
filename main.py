@@ -329,23 +329,33 @@ def enhanced_training_loop(model, tokenizer, config, device):
         print("⚠️ OpenWebText not available, using fallback dataset...")
         dataset = load_dataset("wikitext", "wikitext-2-raw-v1", split="train")
     
-    # Enhanced data sampling - use much more data for better training
-    # Local data configuration (replacing get_data_config)
+    # Enhanced data sampling - check dataset size first
     data_config = {
         'sample_size': 50000
     }
-    sample_size = data_config['sample_size']  # Now 50,000 for enhanced training!
-    print(f"🎯 ENHANCED DATA LOADING: Sampling {sample_size:,} texts for better training...")
-    print(f"   📈 This is 5x more data than before for significantly better results!")
+    sample_size = data_config['sample_size']
     
+    # Get dataset size and adjust sample_size if necessary
     if hasattr(dataset, 'take'):
-        # For streaming datasets
-        texts = [item['text'] for item in dataset.take(sample_size) if len(item['text'].strip()) > 50]
+        # For streaming datasets, we'll take what we can get
+        print(f"🎯 ENHANCED DATA LOADING: Attempting to sample {sample_size:,} texts...")
+        texts = []
+        count = 0
+        for item in dataset:
+            if len(item['text'].strip()) > 50:
+                texts.append(item['text'])
+                count += 1
+                if count >= sample_size:
+                    break
+        print(f"✅ Successfully collected {len(texts):,} texts from streaming dataset")
     else:
-        # For regular datasets
-        texts = [item['text'] for item in dataset[:sample_size] if len(item['text'].strip()) > 50]
-    
-    print(f"✅ Prepared {len(texts)} training texts")
+        # For regular datasets, check the actual size first
+        dataset_size = len(dataset)
+        actual_sample_size = min(sample_size, dataset_size)
+        print(f"🎯 Dataset size: {dataset_size:,}, using {actual_sample_size:,} samples")
+        
+        texts = [item['text'] for item in dataset[:actual_sample_size] if len(item['text'].strip()) > 50]
+        print(f"✅ Prepared {len(texts):,} training texts")
     
     # Create dataset and dataloader
     train_dataset = ImprovedTextDataset(texts, tokenizer, config['max_seq_len'])
