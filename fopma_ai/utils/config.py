@@ -17,12 +17,12 @@ def get_default_config():
 
 
 def get_training_config():
-    """Get default training configuration"""
+    """Get enhanced training configuration for better retraining"""
     return {
         'learning_rate': 3e-4,
         'weight_decay': 0.01,
         'betas': (0.9, 0.95),
-        'num_epochs': 3,
+        'num_epochs': 100,  # Enhanced: 100 epochs for much better training
         'warmup_ratio': 0.1,
         'gradient_clipping': 1.0,
         'save_steps': 500,
@@ -44,9 +44,9 @@ def get_generation_config():
 
 
 def get_data_config():
-    """Get default data processing configuration"""
+    """Get enhanced data processing configuration for better training"""
     return {
-        'sample_size': 10000,
+        'sample_size': 50000,  # Enhanced: 5x more training data (was 10000)
         'max_length': 256,
         'min_text_length': 50,
         'quality_filter': True,

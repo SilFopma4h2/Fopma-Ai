@@ -69,10 +69,15 @@ class EnhancedTrainer:
         print(f"   Weight decay: {self.config['weight_decay']}")
     
     def train(self, dataloader):
-        """Enhanced training loop with better monitoring"""
-        print(f"🚀 Starting enhanced training for {self.config['num_epochs']} epochs...")
-        print(f"   Batch size: {dataloader.batch_size}")
-        print(f"   Total batches per epoch: {len(dataloader)}")
+        """Enhanced training loop with better monitoring for 100 epochs"""
+        print(f"🚀 Starting ENHANCED RETRAINING for {self.config['num_epochs']} epochs...")
+        print(f"📊 Training Configuration Summary:")
+        print(f"   🔄 Epochs: {self.config['num_epochs']} (ENHANCED for better results)")
+        print(f"   📦 Batch size: {dataloader.batch_size}")
+        print(f"   📚 Total batches per epoch: {len(dataloader)}")
+        print(f"   🎯 Total training steps: {len(dataloader) * self.config['num_epochs']:,}")
+        print(f"   ⏱️  Estimated training time: ~{(len(dataloader) * self.config['num_epochs'] * 0.5 / 60):.1f} minutes")
+        print()
         
         # Setup optimization
         self.setup_optimization(dataloader)
@@ -81,9 +86,17 @@ class EnhancedTrainer:
         self.model.train()
         global_step = 0
         
+        # Progress tracking for 100 epochs
+        epoch_milestones = [10, 25, 50, 75, 90, 100]
+        
         for epoch in range(self.config['num_epochs']):
             epoch_losses = []
-            progress_bar = tqdm(dataloader, desc=f"Epoch {epoch + 1}")
+            
+            # Special milestone reporting
+            if (epoch + 1) in epoch_milestones:
+                print(f"\n🎯 MILESTONE: Epoch {epoch + 1}/{self.config['num_epochs']} - {((epoch + 1)/self.config['num_epochs']*100):.0f}% complete!")
+            
+            progress_bar = tqdm(dataloader, desc=f"Epoch {epoch + 1}/{self.config['num_epochs']}")
             
             for batch_idx, batch in enumerate(progress_bar):
                 # Move batch to device
@@ -117,31 +130,59 @@ class EnhancedTrainer:
                 epoch_losses.append(loss_value)
                 self.training_losses.append(loss_value)
                 
-                # Update progress bar
+                # Update progress bar with enhanced info
                 current_lr = self.scheduler.get_last_lr()[0]
+                avg_loss_recent = sum(self.training_losses[-10:]) / min(10, len(self.training_losses))
                 progress_bar.set_postfix({
                     'loss': f'{loss_value:.4f}',
+                    'avg_loss': f'{avg_loss_recent:.4f}',
                     'lr': f'{current_lr:.2e}',
-                    'step': global_step
+                    'step': f'{global_step:,}'
                 })
                 
-                # Periodic logging
-                if global_step % self.config['logging_steps'] == 0:
+                # Enhanced periodic logging
+                if global_step % self.config['logging_steps'] == 0 and global_step > 0:
                     avg_loss = sum(self.training_losses[-self.config['logging_steps']:]) / self.config['logging_steps']
-                    print(f"   Step {global_step}: avg_loss={avg_loss:.4f}, lr={current_lr:.2e}")
+                    print(f"   📈 Step {global_step:,}: avg_loss={avg_loss:.4f}, lr={current_lr:.2e}")
                 
                 global_step += 1
             
-            # Epoch summary
+            # Enhanced epoch summary
             avg_epoch_loss = sum(epoch_losses) / len(epoch_losses)
-            print(f"✅ Epoch {epoch + 1} completed - Average loss: {avg_epoch_loss:.4f}")
+            improvement = ""
+            if epoch > 0:
+                prev_epoch_start = max(0, len(self.training_losses) - len(epoch_losses) * 2)
+                prev_epoch_end = len(self.training_losses) - len(epoch_losses)
+                if prev_epoch_end > prev_epoch_start:
+                    prev_avg = sum(self.training_losses[prev_epoch_start:prev_epoch_end]) / (prev_epoch_end - prev_epoch_start)
+                    change = ((avg_epoch_loss - prev_avg) / prev_avg) * 100
+                    if change < 0:
+                        improvement = f" (⬇ {abs(change):.1f}% improvement!)"
+                    else:
+                        improvement = f" (⬆ {change:.1f}% higher)"
+            
+            print(f"✅ Epoch {epoch + 1}/{self.config['num_epochs']} completed - Average loss: {avg_epoch_loss:.4f}{improvement}")
             
             # Save best model
             if avg_epoch_loss < self.best_loss:
                 self.best_loss = avg_epoch_loss
                 self._save_checkpoint(epoch, avg_epoch_loss, 'best_model.pt')
+                print(f"   💾 New best model saved! Loss: {avg_epoch_loss:.4f}")
+            
+            # Save regular checkpoints every 10 epochs
+            if (epoch + 1) % 10 == 0:
+                checkpoint_name = f'checkpoint_epoch_{epoch+1}.pt'
+                self._save_checkpoint(epoch, avg_epoch_loss, checkpoint_name)
+                print(f"   💾 Checkpoint saved: {checkpoint_name}")
         
-        print("🎉 Training completed successfully!")
+        print("\n🎉 ENHANCED RETRAINING COMPLETED SUCCESSFULLY!")
+        print(f"📊 Training Summary:")
+        print(f"   🔄 Total epochs completed: {self.config['num_epochs']}")
+        print(f"   📈 Total training steps: {global_step:,}")
+        print(f"   🎯 Best loss achieved: {self.best_loss:.4f}")
+        print(f"   📉 Final loss: {self.training_losses[-1]:.4f}")
+        print(f"   💾 Best model saved as: best_model.pt")
+        
         return self.training_losses
     
     def _calculate_language_modeling_loss(self, logits, labels, attention_mask):
