@@ -7,21 +7,16 @@ This script can be run directly in Google Colab after cloning the repository:
 !git clone https://github.com/SilFopma4h2/Fopma-Ai.git
 %cd Fopma-Ai
 !python main.py
-
-NOTE: This is now the modular version using improved file structure and training data.
-The old monolithic code has been refactored into organized modules for better maintainability.
 """
 
 import sys
 import os
 import warnings
+import time
 from typing import Optional, Dict, Any
 
 # Suppress warnings for cleaner output
 warnings.filterwarnings('ignore')
-
-# Add the current directory to Python path for imports  
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 def install_dependencies():
     """Install required dependencies if not already installed"""
@@ -67,7 +62,7 @@ def enhanced_mini_gpt():
     import torch
     import torch.nn as nn
     import torch.nn.functional as F
-    from transformers import GPT2Tokenizer, AdamW, get_linear_schedule_with_warmup
+    from transformers import GPT2Tokenizer
     from datasets import load_dataset
     import math
     from tqdm.auto import tqdm
@@ -285,7 +280,8 @@ def enhanced_training_loop(model, tokenizer, config, device):
     import torch
     import torch.nn as nn
     from torch.utils.data import DataLoader, Dataset
-    from transformers import AdamW, get_linear_schedule_with_warmup
+    from torch.optim import AdamW
+    from transformers import get_linear_schedule_with_warmup
     from datasets import load_dataset
     from tqdm.auto import tqdm
     import matplotlib.pyplot as plt
@@ -619,6 +615,7 @@ def enhanced_text_generation(model, tokenizer, device):
 
 def main():
     """Main function to run the enhanced Mini-ChatGPT"""
+    import torch
     print("🌟 Fopma-AI: Enhanced Mini-ChatGPT")
     print("=" * 50)
     print("Welcome to the improved AI experience!")
