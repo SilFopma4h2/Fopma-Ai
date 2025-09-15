@@ -204,7 +204,8 @@ def enhanced_mini_gpt():
         
         def create_causal_mask(self, seq_len, device):
             """Create causal mask for autoregressive generation"""
-            mask = torch.tril(torch.ones(seq_len, seq_len, device=device))
+            # Create a boolean causal mask to avoid float bitwise operations on CUDA
+            mask = torch.tril(torch.ones(seq_len, seq_len, device=device)).bool()
             return mask.unsqueeze(0).unsqueeze(0)
         
         def forward(self, input_ids, attention_mask=None):
@@ -219,11 +220,11 @@ def enhanced_mini_gpt():
             position_embeds = self.position_embedding(position_ids)
             x = self.dropout(token_embeds + position_embeds)
             
-            # Create causal mask
+            # Create causal mask (boolean)
             causal_mask = self.create_causal_mask(seq_len, device)
             if attention_mask is not None:
-                # Combine with padding mask
-                causal_mask = causal_mask & attention_mask.unsqueeze(1).unsqueeze(1)
+                # Ensure attention_mask is boolean and combine with causal mask
+                causal_mask = causal_mask & attention_mask.unsqueeze(1).unsqueeze(1).to(torch.bool)
             
             # Pass through transformer blocks
             for block in self.transformer_blocks:
