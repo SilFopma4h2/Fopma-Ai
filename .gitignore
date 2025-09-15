@@ -56,6 +56,9 @@ logs/
 
 # Model checkpoints and cache
 mini_chatgpt_checkpoint.pt
+enhanced_mini_chatgpt.pt
+enhanced_mini_chatgpt_v2.pt
+best_model.pt
 transformers_cache/
 huggingface_cache/
 

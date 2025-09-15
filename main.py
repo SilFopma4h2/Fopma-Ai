@@ -7,16 +7,21 @@ This script can be run directly in Google Colab after cloning the repository:
 !git clone https://github.com/SilFopma4h2/Fopma-Ai.git
 %cd Fopma-Ai
 !python main.py
+
+NOTE: This is now the modular version using improved file structure and training data.
+The old monolithic code has been refactored into organized modules for better maintainability.
 """
 
 import sys
 import os
 import warnings
-import time
 from typing import Optional, Dict, Any
 
 # Suppress warnings for cleaner output
 warnings.filterwarnings('ignore')
+
+# Add the current directory to Python path for imports  
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 def install_dependencies():
     """Install required dependencies if not already installed"""
