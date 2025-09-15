@@ -330,7 +330,10 @@ def enhanced_training_loop(model, tokenizer, config, device):
         dataset = load_dataset("wikitext", "wikitext-2-raw-v1", split="train")
     
     # Enhanced data sampling - use much more data for better training
-    data_config = get_data_config()
+    # Local data configuration (replacing get_data_config)
+    data_config = {
+        'sample_size': 50000
+    }
     sample_size = data_config['sample_size']  # Now 50,000 for enhanced training!
     print(f"🎯 ENHANCED DATA LOADING: Sampling {sample_size:,} texts for better training...")
     print(f"   📈 This is 5x more data than before for significantly better results!")
@@ -355,11 +358,13 @@ def enhanced_training_loop(model, tokenizer, config, device):
     
     # Enhanced optimizer and scheduler  
     print("🔧 Setting up ENHANCED training configuration...")
-    print("🎯 Using 100 epochs and 5x more data for better results!")
-    
-    # Use enhanced configuration
-    from fopma_ai.utils.config import get_training_config, get_data_config
-    training_config = get_training_config()
+    # Local training configuration (replacing get_training_config)
+    training_config = {
+        'learning_rate': 3e-4,
+        'weight_decay': 0.01,
+        'betas': (0.9, 0.999),
+        'num_epochs': 100
+    }
     
     optimizer = AdamW(
         model.parameters(),
