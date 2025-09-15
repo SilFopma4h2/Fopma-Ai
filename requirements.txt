@@ -1,0 +1,15 @@
+# Requirements for Mini-ChatGPT Colab Implementation
+# These packages are automatically installed in the notebook
+# but listed here for reference
+
+torch>=1.9.0
+transformers>=4.20.0
+datasets>=2.0.0
+accelerate>=0.20.0
+tqdm>=4.60.0
+numpy>=1.21.0
+
+# Optional for local development
+jupyter>=1.0.0
+notebook>=6.4.0
+ipywidgets>=7.6.0
